@@ -13,8 +13,23 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
+                    {{ $user->name }}
                     {{ __('You are logged in!') }}
+
+                    @role('project-manager')
+                        Project Manager Panel
+                    @endrole
+                    @role('web-developer')
+                        Web Developer Panel
+                    @endrole
+
+                    @if(Gate::allows("manage-users"))
+                        <div>Manage for User Action</div>
+                    @endif
+
+                    @if(Gate::allows("create-tasks"))
+                        <div>Create Task Action</div>
+                    @endif
                 </div>
             </div>
         </div>

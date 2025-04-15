@@ -31,7 +31,7 @@ trait HasRolesAndPermissions
 
     public function hasPermission($permission)
     {
-        return (bool)$this->permissions->where("slug", $permission)->count();
+        return (bool)$this->permissions->where("slug", $permission->slug)->count();
     }
 
     public function hasPermissionThroughRole($permission)
@@ -63,6 +63,17 @@ trait HasRolesAndPermissions
         return $this;
     }
 
+    public function deletePermissions(... $permissions)
+    {
+        $permissions = $this->getPermissionsAll($permissions);
+        $this->permissions()->detach($permissions);
+        return $this;
+    }
 
+    public function refreshPermissions(... $permissions)
+    {
+        $this->permissions()->detach($permissions);
+        return $this->getPermissionsTo($permissions);
+    }
 }
 
