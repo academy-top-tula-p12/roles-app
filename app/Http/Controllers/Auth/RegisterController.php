@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
+use App\Models\Permission;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -61,12 +63,34 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\Models\User
      */
-    protected function create(array $data)
+    public function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+        ]);
+
+        $role = Role::where("slug", $data["role"])->first();
+        $user->roles()->attach($role);
+
+        foreach($data["permissions"] as $permission_slug)
+        {
+            $permission = Permission::where("slug", $permission_slug)->first();
+            $user->permissions()->attach($permission);
+        }
+
+        return $user;
+    }
+
+    public function get_register()
+    {
+        $permissions = Permission::all();
+        $roles = Role::all();
+
+        return View("auth.register", [
+            "permissions" => $permissions,
+            "roles" => $roles,
         ]);
     }
 }
